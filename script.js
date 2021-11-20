@@ -43,8 +43,8 @@ const tick = () => {
 }
 
 const camera = {
-	scale: 1.0,
-	x: 0,
+	scale: 10.0,
+	x: 300,
 	dx: 0,
 	dscale: 1.0,
 	focus: 0,
@@ -94,11 +94,11 @@ on.keydown(e => {
 	}
 	
 	else if (e.key === "e") {
-		camera.dfocus = WASD_FOCUS_SPEED
+		camera.dfocus = WASD_FOCUS_SPEED / camera.scale
 	}
 	
 	else if (e.key === "q") {
-		camera.dfocus = -WASD_FOCUS_SPEED
+		camera.dfocus = -WASD_FOCUS_SPEED / camera.scale
 	}
 })
 
@@ -131,7 +131,7 @@ const draw = () => {
 }
 
 const BOTTOM_GAP = 50
-const PLANE_SCALE = 0.15
+const PLANE_SCALE = 0.2
 const drawTimeline = () => {
 	
 	const x = 0 + camera.x
@@ -146,7 +146,7 @@ const drawTimeline = () => {
 	context.stroke()
 	
 	for (const time of timeline) {
-		//drawTime(time)
+		drawTime(time)
 		
 	}
 	
@@ -156,14 +156,32 @@ const drawTimeline = () => {
 	
 }
 
+const THUMB_SCALE = 0.1
 const drawTime = (time) => {
 	
-	const gap = canvas.width / (timeline.length-1)
-	const x = (time.number-1) * gap + camera.x
+	const gap = (canvas.width / (timeline.length-1)) * camera.scale
+	const x = ((time.number-1) * gap + camera.x)
 	const y = canvas.height - BOTTOM_GAP
 	
 	context.beginPath()
-	context.arc(x, y, 15, 0, 2*Math.PI)
+	const csize = Math.max(8, Math.min(10, 1 * camera.scale))
+	context.arc(x, y, csize, 0, 2*Math.PI)
 	context.fillStyle = Colour.White
 	context.fill()
+
+	const width = gap * 0.8
+	const height = time.img.height / time.img.width * width
+
+	const ihover = Math.max(BOTTOM_GAP*camera.scale*0.1, BOTTOM_GAP/2)
+	const iy = y - ihover - height
+	const ix = x - width/2
+
+	
+	context.strokeStyle = Colour.White
+	context.lineWidth = 1 * camera.scale
+	context.strokeRect(ix, iy, width, height)
+
+	context.drawImage(time.img, ix, iy, width, height)
+
+
 }
