@@ -5,7 +5,7 @@ canvas.style["background-color"] = Colour.Black
 canvas.style["margin"] = 0
 
 
-const TIMELINE_LENGTH = 30
+const TIMELINE_LENGTH = 33
 const timeline = []
 for (let i = 0; i < TIMELINE_LENGTH; i++) {
 	timeline.push({number: i+1})
@@ -26,14 +26,17 @@ on.load(() => {
 	setInterval(tick, 1000 / 60)
 })
 
+let GAP = 0
 on.resize(() => {
 	canvas.height = innerHeight
 	canvas.width = innerWidth
 	canvas.style["height"] = canvas.height
 	canvas.style["width"] = canvas.width
+	GAP = (canvas.width / (timeline.length-1))
 })
 
 trigger("resize")
+
 	
 timeline[0].name = "2D Falling Sand"
 
@@ -43,8 +46,8 @@ const tick = () => {
 }
 
 const camera = {
-	scale: 10.0,
-	x: 300,
+	scale: 3.0,
+	x: 200,
 	dx: 0,
 	dscale: 1.0,
 	focus: 0,
@@ -185,3 +188,13 @@ const drawTime = (time) => {
 
 
 }
+
+const FLY_SPEED = 1000
+
+const fly = async (end, start = camera.focus / GAP) => {
+	const to = end * GAP
+	const from = start * GAP
+	const over = Math.abs(end - start) * FLY_SPEED
+	await camera.tween("focus", {to, from, over, launch: 0.0, land: 0.0})
+}
+
