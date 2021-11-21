@@ -5,7 +5,7 @@ canvas.style["background-color"] = Colour.Black
 canvas.style["margin"] = 0
 
 
-const TIMELINE_LENGTH = 33
+const TIMELINE_LENGTH = 30
 const timeline = []
 for (let i = 0; i < TIMELINE_LENGTH; i++) {
 	timeline.push({number: i+1})
@@ -46,12 +46,13 @@ const tick = () => {
 }
 
 const camera = {
-	scale: 3.0,
-	x: 200,
+	scale: 12.0,
+	x: -21500,
 	dx: 0,
 	dscale: 1.0,
-	focus: 0,
+	focus: 1900,
 	dfocus: 0,
+	hidden: true,
 }
 
 const zoom = (dscale) => {
@@ -135,6 +136,7 @@ const draw = () => {
 
 const BOTTOM_GAP = 50
 const PLANE_SCALE = 0.2
+let flipped = true
 const drawTimeline = () => {
 	
 	const x = 0 + camera.x
@@ -153,9 +155,24 @@ const drawTimeline = () => {
 		
 	}
 	
+	if (camera.hidden) return
+
 	const planeWidth = plane.width * PLANE_SCALE
 	const planeHeight = plane.height * PLANE_SCALE
+	const extra = planeWidth/2
+	if (flipped) {
+		context.translate(camera.x + camera.scale * (camera.focus) - planeWidth/2 + extra, y - planeHeight * 0.45)
+		context.scale(-1, 1)
+		context.translate(-(camera.x + camera.scale * (camera.focus) - planeWidth/2) - extra, -(y - planeHeight * 0.45))
+	}
 	context.drawImage(plane, camera.x + camera.scale * (camera.focus) - planeWidth/2, y - planeHeight * 0.45, planeWidth, planeHeight)
+	
+	if (flipped) {
+		
+		context.translate(camera.x + camera.scale * (camera.focus) - planeWidth/2 + extra, y - planeHeight * 0.45)
+		context.scale(-1, 1)
+		context.translate(-(camera.x + camera.scale * (camera.focus) - planeWidth/2) - extra, -(y - planeHeight * 0.45))
+	}
 	
 }
 
@@ -198,3 +215,11 @@ const fly = async (end, start = camera.focus / GAP) => {
 	await camera.tween("focus", {to, from, over, launch: 0.0, land: 0.0})
 }
 
+on.keydown(e => {
+	if (e.key === "p") startingPan()
+})
+const startingPan = async () => {
+	const over = 50_000
+	camera.tween("scale", {to: 4.0, over, launch: 0.0, land: 0.0})
+	camera.tween("x", {to: 145, over, launch: 0.0, land: 0.0})
+}
