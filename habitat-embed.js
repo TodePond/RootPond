@@ -944,95 +944,54 @@ Habitat.install = (global) => {
 //=======//
 {
 	Habitat.Tween = {}
-	
-	let tt = true
-	Habitat.Tween.getSteps = ({from, to, over, launch = 1.0, land = 1.0} = {}, value) => {
-		if (to === undefined) to = value
-		if (from === undefined) from = value
-		if (over === undefined) over = 1000
-
-		launch = 1.0 - launch
-		land = 1.0 - land
-
-		const offset = from
-		to -= offset
-		from -= offset
-
-		const difference = to - from
-		const length = 60 * over/1000
-
-		const jump = difference / length
-		const jumps = [jump].repeat(length)
-
-		for (let i = 0; i < length; i++) {
-			const j = jumps[i]
-
-			const startness = (length-(i*land)) / length
-			const endness = (i*launch+1) / length
-
-			jumps[i] = j * (endness * startness)
-		}
-
-		let steps = []
-		let v = 0
-		for (const j of jumps) {
-			v += j
-			steps.push(v)
-		}
-		
-		const error = (to) / (steps[steps.length-1])
-		steps = steps.map(s => s * error)
-		steps = steps.map(s => s + offset)
-
-		/*for (const s of jumps) {
-			if (tt) print("=".repeat(s*100))
-			else print("-".repeat(s*100))
-			tt = !tt
-		}*/
-
-		/*for (const s of steps) {
-			if (tt) print("=".repeat(s))
-			else print("-".repeat(s))
-			tt = !tt
-		}*/
-
-		return steps
-	}
 
 	Habitat.Tween.install = (global) => {
 		Habitat.Tween.installed = true
 
 		Reflect.defineProperty(global.Object.prototype, "tween", {
-			value(propertyName, options) {
+			value(propertyName, {to, from, over = 1000, launch = 0.5, land = 0.5} = {}) {
+				const before = this[propertyName]
+				if (from === undefined) from = before
+				if (to === undefined) to = before
 
-				const steps = Habitat.Tween.getSteps(options, this[propertyName])
-				
-				const promise = new Promise((resolve) => {
-					let i = 0
-					const tweener = setInterval(() => {
-						
-						this[propertyName] = steps[i]
-						
-						i++
-						if (i >= steps.length) {
-							clearInterval(tweener)
-							resolve()
+				launch *= 2/3
+				land = 1/3 + (1 - land) * 2/3
+
+				const start = performance.now()
+
+				Reflect.defineProperty(this, propertyName, {
+					get() {
+						const now = performance.now()
+
+						if (now > start + over) {
+							Reflect.defineProperty(this, propertyName, {
+								value: to,
+								writable: true,
+								configurable: true,
+								enumerable: true,
+							})
+							return to
+						} else {
+							const t = (now - start) / over
+							const v = 3*t*(1-t)*(1-t)*launch + 3*t*t*(1-t)*land + t*t*t
+							return v * (to - from) + from
 						}
-	
-					}, 1000 / 60)
 
+					},
+					set() {
+						
+					},
+
+					configurable: true,
+					enumerable: true,
 				})
-
-				return promise
-
 			},
+			
 			configurable: true,
 			enumerable: false,
 			writable: true,
 		})
-
 	}
-	
 }
 
 //======//

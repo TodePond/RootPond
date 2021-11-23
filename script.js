@@ -47,12 +47,12 @@ const tick = () => {
 
 const camera = {
 	scale: 12.0,
-	x: -21500,
+	x: 0,
 	dx: 0,
 	dscale: 1.0,
-	focus: 1900,
+	focus: 0,
 	dfocus: 0,
-	hidden: true,
+	hidden: false,
 }
 
 const zoom = (dscale) => {
@@ -136,7 +136,7 @@ const draw = () => {
 
 const BOTTOM_GAP = 50
 const PLANE_SCALE = 0.2
-let flipped = true
+let flipped = false
 const drawTimeline = () => {
 	
 	const x = 0 + camera.x
@@ -215,8 +215,21 @@ const fly = async (end, start = camera.focus / GAP) => {
 	await camera.tween("focus", {to, from, over, launch: 0.0, land: 0.0})
 }
 
+camera.focus = 0
+camera.scale = 10.0
+camera.x = 350
 on.keydown(e => {
 	if (e.key === "p") startingPan()
+	if (e.key === "b") {
+		camera.tween("focus", {from: 800, to: 0, over: 30_000, launch: 1.0, land: 0.0})
+		camera.tween("scale", {from: 1.6, to: 10, over: 70_000, launch: 1.0, land: 0.0})
+		camera.tween("x", {from: 134, to: 400, over: 80_000, launch: 1.0, land: 0.0})
+	}
+	if (e.key === "t") {
+		camera.tween("focus", {from: 0, to: GAP* 8, over: 20_000, launch: 0.0, land: 0.0})
+		camera.tween("scale", {from: 10.0, to: 3.2, over: 21_000, launch: 0.0, land: 0.0})
+		camera.tween("x", {from: 350, to: -731, over: 22_000, launch: 0.0, land: 0.0})
+	}
 })
 const startingPan = async () => {
 	const over = 50_000
