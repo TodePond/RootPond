@@ -5,7 +5,7 @@ canvas.style["background-color"] = Colour.Black
 canvas.style["margin"] = 0
 
 
-const TIMELINE_LENGTH = 30
+const TIMELINE_LENGTH = 33
 const timeline = []
 for (let i = 0; i < TIMELINE_LENGTH; i++) {
 	timeline.push({number: i+1})
@@ -215,9 +215,9 @@ const fly = async (end, start = camera.focus / GAP) => {
 	await camera.tween("focus", {to, from, over, launch: 0.0, land: 0.0})
 }
 
-camera.focus = 0
-camera.scale = 10.0
-camera.x = 350
+camera.focus = GAP*30
+camera.scale = 16.53
+camera.x = -28296.57
 on.keydown(e => {
 	if (e.key === "p") startingPan()
 	if (e.key === "b") {
@@ -229,6 +229,26 @@ on.keydown(e => {
 		camera.tween("focus", {from: 0, to: GAP* 8, over: 20_000, launch: 0.0, land: 0.0})
 		camera.tween("scale", {from: 10.0, to: 3.2, over: 21_000, launch: 0.0, land: 0.0})
 		camera.tween("x", {from: 350, to: -731, over: 22_000, launch: 0.0, land: 0.0})
+	}
+	if (e.key === "v") {
+		camera.tween("focus", {from: GAP*8, to: GAP* 16, over: 20_000, launch: 0.0, land: 0.0})
+		camera.tween("scale", {from: 3.2, to: 5.7, over: 21_000, launch: 0.0, land: 0.0})
+		camera.tween("x", {from: -731, to: -4685, over: 22_000, launch: 0.0, land: 0.0})
+	}
+	if (e.key === "c") {
+		camera.tween("focus", {from: GAP* 16, to: GAP* 22, over: 19_000, launch: 0.0, land: 0.0})
+		camera.tween("scale", {from: 5.7, to: 3.779, over: 23_000, launch: 0.0, land: 0.0})
+		camera.tween("x", {from: -5000, to: -4248, over: 22_000, launch: 0.0, land: 0.0})
+	}
+	if (e.key === "x") {
+		camera.tween("focus", {from: GAP* 22, to: GAP* 28, over: 19_000, launch: 0.0, land: 0.0})
+		camera.tween("scale", {from: 5.8, to: 7.33, over: 22_000, launch: 0.0, land: 0.0})
+		camera.tween("x", {from: -7911, to: -11937, over: 22_000, launch: 0.0, land: 0.0})
+	}
+	if (e.key === "z") {
+		camera.tween("focus", {from: GAP* 30, to: GAP* 33, over: 33_000, launch: 0.0, land: 0.0})
+		camera.tween("scale", {from: 16.53, to: 9.314, over: 22_000, launch: 0.0, land: 0.0})
+		camera.tween("x", {from: -28296.57, to: -16216.53, over: 22_000, launch: 0.0, land: 0.0})
 	}
 })
 const startingPan = async () => {
